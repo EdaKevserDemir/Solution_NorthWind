@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.Constants;
 using Core.Utilities;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
@@ -23,39 +24,48 @@ namespace Business.Concrete
         {
             if(product.ProductName.Length<2)
             {
-                return ErrorResult("Ürün ismi min 2 karakter olmalıdır.")
+                return new ErrorResult(Messages.ProductNameInValid);
             }
             _productDal.Add(product);
-            return new SuccessResult();
+            return new SuccessResult(Messages.ProductAdded);
         }
 
-        public List<Product> GetAll()
+      
+
+        public IDataResult<List<Product>> GetAll()
         {
             //iş kodları
             //veri tabanından çekilecek veri için yazılacak kurallar burada olmalı...Şart kodlarını
-
-            return _productDal.GetAll();
+            if(DateTime.Now.Hour==22)
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
+            }
+            return new SuccessDataResult<List<Product>> (_productDal.GetAll(),Messages.ProductsListed);
 
         }
 
-        public List<Product> GetAllByCategoryId(int catid)
+        public IDataResult<List<Product>> GetAllByCategoryId(int catid)
         {
-            return _productDal.GetAll(p => p.CategoryId == catid);
+            return new SuccessDataResult<List<Product>>( _productDal.GetAll(p => p.CategoryId == catid));
         }
 
-        public Product GetByI(int productId)
+        public IDataResult<Product> GetById(int productId)
         {
-            return _productDal.Get(p => p.ProductId == productId);
+            return new SuccessDataResult<Product> (_productDal.Get(p => p.ProductId == productId));
         }
 
-        public List<Product> GetByUnitPrice(decimal min, decimal max)
+        public IDataResult<List<Product>> GetByUnitPrice(decimal min, decimal max)
         {
-            return _productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max);
+            return new SuccessDataResult<List<Product>>( _productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max));
         }
 
-        public List<ProductDetailDto> GetProductDetails()
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
-            return _productDal.GetProductDetails();
+            if (DateTime.Now.Hour == 22)
+            {
+                return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);
+            }
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
     }
 }

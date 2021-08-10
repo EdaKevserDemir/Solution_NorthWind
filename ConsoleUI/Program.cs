@@ -12,7 +12,6 @@ namespace ConsoleUI
         //OPEN CLOSED PRINCIPLE(Mevcut kodlara dokunmadan yeni yapı ekleme-entityframeworke geçirme süreci)
         static void Main(string[] args)
         {
-
             ProductTest();
         }
 
@@ -30,15 +29,21 @@ namespace ConsoleUI
         private static void ProductTest()
         {
             ProductManager productManager = new ProductManager(new EfProductDal());
-            foreach (var product in productManager.GetProductDetails())
-            {
-                Console.WriteLine(product.ProductName+"/"+product.CategoryName);
-            }
 
-            foreach (var product in productManager.GetByUnitPrice(50, 100))
+            var result = productManager.GetProductDetails();
+
+            if (result.Success)
             {
-                Console.WriteLine(product.UnitPrice);
+                foreach (var product in productManager.GetProductDetails().Data)
+                {
+                    Console.WriteLine(product.ProductName + "/" + product.CategoryName);
+                }
+
             }
+            else Console.WriteLine(result.Message);
+
+
+
         }
     }
 }
