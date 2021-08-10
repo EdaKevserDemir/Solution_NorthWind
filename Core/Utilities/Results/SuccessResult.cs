@@ -8,7 +8,7 @@ namespace Core.Utilities.Results
     {
         public SuccessResult(string message):base(true,message)
         {
-
+            Console.WriteLine("merhaba dünya");
         }
 
         public SuccessResult():base(true)
